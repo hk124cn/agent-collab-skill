@@ -1,0 +1,6 @@
+logs/
+progress/
+*.jsonl
+*.bak
+__pycache__/
+.env
