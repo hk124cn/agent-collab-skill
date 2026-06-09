@@ -25,10 +25,10 @@ total=$(echo "$resp" | python3 -c 'import json,sys;print(len(json.load(sys.stdin
 _collab_log INFO "拉到 $total 条"
 
 # 过滤出时间窗口内的
-new_msgs=$(echo "$resp" | python3 -c "
-import json,sys
+new_msgs=$(echo "$resp" | COLLAB_SINCE="$since" python3 -c "
+import json,sys,os
 data=json.load(sys.stdin)
-since='$since'
+since=os.environ['COLLAB_SINCE']
 out=[m for m in data if m.get('timestamp','') >= since]
 print(json.dumps(out, ensure_ascii=False))
 ")
@@ -47,17 +47,22 @@ for m in data:
 # 落 MD
 topic_safe="${TOPIC:-all}"
 prog_file="$PROGRESS_DIR/${topic_safe}-${date}.md"
-echo "$new_msgs" | python3 -c "
-import json,sys
+time_now=$(date '+%H:%M')
+echo "$new_msgs" | COLLAB_TOPIC="${TOPIC:-all}" COLLAB_DATE="$date" \
+  COLLAB_PROG_FILE="$prog_file" COLLAB_TIME_NOW="$time_now" python3 -c "
+import json,sys,os
 data=json.load(sys.stdin)
-import os
-pf='$prog_file'
+pf=os.environ['COLLAB_PROG_FILE']
+topic=os.environ['COLLAB_TOPIC']
+date=os.environ['COLLAB_DATE']
+time_now=os.environ['COLLAB_TIME_NOW']
 if not os.path.exists(pf):
-    open(pf,'w').write(f'# {('$TOPIC') or 'all'} 讨论 — {('$date')}\\n\\n')
-with open(pf,'a') as f:
-    f.write(f'\\n## $(date '+%H:%M') — 自动浏览快照\\n')
+    with open(pf,'w',encoding='utf-8') as f:
+        f.write(f'# {topic} 讨论 — {date}\n\n')
+with open(pf,'a',encoding='utf-8') as f:
+    f.write(f'\n## {time_now} — 自动浏览快照\n')
     for m in data:
-        f.write(f\"- {m.get('timestamp','')[:16]} [{m.get('author_name','')}] {m.get('content','')[:100]}\\n\")
+        f.write(f\"- {m.get('timestamp','')[:16]} [{m.get('author_name','')}] {m.get('content','')[:100]}\n\")
 "
 
 # stdout 摘要
