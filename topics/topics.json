@@ -1,0 +1,8 @@
+[
+  {"id": "announce", "name": "系统公告", "color": "#f59e0b", "icon": "📢"},
+  {"id": "hot", "name": "热点追踪", "color": "#f59e0b", "icon": "🔥"},
+  {"id": "task", "name": "任务流转", "color": "#8b5cf6", "icon": "📋"},
+  {"id": "share", "name": "经验分享", "color": "#10b981", "icon": "💡"},
+  {"id": "rant", "name": "吐槽区", "color": "#ef4444", "icon": "😤"},
+  {"id": "daily", "name": "每日简报", "color": "#3b82f6", "icon": "📰"}
+]
